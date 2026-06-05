@@ -1,0 +1,996 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Ranil_Uchebka.ViewModels"
+             xmlns:models="using:Ranil_Uchebka.Models"
+             xmlns:views="using:Ranil_Uchebka.Views"
+             x:Class="Ranil_Uchebka.Views.ShellView"
+             x:DataType="vm:MainViewModel">
+    <DockPanel Background="#F1F1F1">
+        <Border DockPanel.Dock="Bottom" Background="#4867AC" Padding="10,6">
+            <TextBlock Text="{Binding StatusMessage}" TextTrimming="CharacterEllipsis" Foreground="#FFFFFF"/>
+        </Border>
+
+        <Grid ColumnDefinitions="280,*" Margin="12" ColumnSpacing="12">
+            <Border Background="#FFFFFF"
+                    BorderBrush="#4867AC"
+                    BorderThickness="1"
+                    CornerRadius="12"
+                    Padding="12">
+                <StackPanel Spacing="10">
+                    <Border Background="#FEF9DE" BorderBrush="#F3CC8D" BorderThickness="1" CornerRadius="10" Padding="10">
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="Разделы" FontWeight="SemiBold"/>
+                            <TextBlock Text="Доступ зависит от роли пользователя."
+                                       TextWrapping="Wrap"
+                                       FontSize="11"/>
+                        </StackPanel>
+                    </Border>
+
+                    <StackPanel Spacing="10">
+                        <Button Content="Главная" Command="{Binding OpenRoleHomeCommand}" HorizontalAlignment="Stretch" Classes="nav"/>
+                        <Button Content="Заказы" Command="{Binding OpenOrdersCommand}" IsVisible="{Binding CanAccessOrders}" HorizontalAlignment="Stretch" Classes="nav"/>
+                        <Button Content="Материалы" Command="{Binding OpenMaterialsCommand}" IsVisible="{Binding CanAccessReferences}" HorizontalAlignment="Stretch" Classes="nav"/>
+                        <Button Content="Комплектующие" Command="{Binding OpenComponentsCommand}" IsVisible="{Binding CanAccessReferences}" HorizontalAlignment="Stretch" Classes="nav"/>
+                        <Button Content="Работники" Command="{Binding OpenWorkersCommand}" IsVisible="{Binding CanAccessWorkers}" HorizontalAlignment="Stretch" Classes="nav"/>
+                        <Button Content="Планировка цехов" Command="{Binding OpenWorkshopCommand}" IsVisible="{Binding CanAccessWorkshop}" HorizontalAlignment="Stretch" Classes="nav"/>
+                        <Button Content="Сбои" Command="{Binding OpenFailuresCommand}" IsVisible="{Binding CanAccessFailures}" HorizontalAlignment="Stretch" Classes="nav"/>
+                        <Button Content="Качество" Command="{Binding OpenQualityCommand}" IsVisible="{Binding CanAccessQuality}" HorizontalAlignment="Stretch" Classes="nav"/>
+                        <Button Content="Спецификации" Command="{Binding OpenSpecificationsCommand}" IsVisible="{Binding CanAccessSpecifications}" HorizontalAlignment="Stretch" Classes="nav"/>
+                        <Button Content="Расчёт заказа" Command="{Binding OpenPlanningCommand}" IsVisible="{Binding CanAccessPlanning}" HorizontalAlignment="Stretch" Classes="nav"/>
+                        <Button Content="Отчёт по складу" Command="{Binding OpenStockReportCommand}" IsVisible="{Binding CanAccessStockReport}" HorizontalAlignment="Stretch" Classes="nav"/>
+                    </StackPanel>
+
+                    <Border Background="#F1F1F1"
+                            BorderBrush="#4867AC"
+                            BorderThickness="1"
+                            CornerRadius="10"
+                            Padding="10"
+                            IsVisible="{Binding CanAccessReferences}">
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="Склад" FontWeight="SemiBold"/>
+                            <ComboBox ItemsSource="{Binding Warehouses}"
+                                      SelectedItem="{Binding SelectedWarehouse, Mode=TwoWay}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding DisplayName}" />
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Border>
+
+            <ScrollViewer Grid.Column="1">
+                <StackPanel Spacing="12">
+                    <Border IsVisible="{Binding IsRoleHome}" Background="White" BorderThickness="1" BorderBrush="#4867AC" CornerRadius="10" Padding="18">
+                        <StackPanel Spacing="10">
+                            <TextBlock Text="{Binding RoleScreenName}" FontSize="22" FontWeight="Bold"/>
+                            <TextBlock Text="Используйте меню слева для перехода к разделам." TextWrapping="Wrap"/>
+                            <TextBlock Text="Права: заказчик не видит справочники; конструктор и мастер — только просмотр; менеджер и директор — редактирование справочников; учёт работников — только директор." TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Border IsVisible="{Binding IsMaterialsSection}" Background="White" BorderThickness="1" BorderBrush="#4867AC" CornerRadius="10" Padding="14">
+                        <Grid ColumnDefinitions="3*,2*" RowDefinitions="Auto,*" ColumnSpacing="12" RowSpacing="10">
+                            <StackPanel Grid.ColumnSpan="2" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                                <TextBlock Text="Материалы" FontSize="20" FontWeight="Bold"/>
+                                <Border Background="#FEF9DE" BorderBrush="#F3CC8D" BorderThickness="1" CornerRadius="10" Padding="10,6">
+                                    <TextBlock Text="{Binding MaterialsDisplayedCount, StringFormat='Показано: {0}'}"/>
+                                </Border>
+                                <Border Background="#FEF9DE" BorderBrush="#F3CC8D" BorderThickness="1" CornerRadius="10" Padding="10,6">
+                                    <TextBlock Text="{Binding MaterialsTotalCount, StringFormat='Всего: {0}'}"/>
+                                </Border>
+                                <Border Background="#FEF9DE" BorderBrush="#F3CC8D" BorderThickness="1" CornerRadius="10" Padding="10,6">
+                                    <TextBlock Text="{Binding MaterialsTotalCost, StringFormat='Сумма: {0:F2}'}"/>
+                                </Border>
+                            </StackPanel>
+
+                            <Border Grid.Row="1" Grid.Column="0" BorderBrush="#4867AC" BorderThickness="1" CornerRadius="10" Padding="10">
+                                <DataGrid Height="520"
+                                          ItemsSource="{Binding Materials}"
+                                          SelectedItem="{Binding SelectedMaterial, Mode=TwoWay}"
+                                          IsReadOnly="True"
+                                          AutoGenerateColumns="False"
+                                          HeadersVisibility="All">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Артикул" Binding="{Binding Article}" x:DataType="models:MaterialItem"/>
+                                        <DataGridTextColumn Header="Наименование" Binding="{Binding Name}" x:DataType="models:MaterialItem"/>
+                                        <DataGridTextColumn Header="Кол-во" Binding="{Binding Quantity}" x:DataType="models:MaterialItem"/>
+                                        <DataGridTextColumn Header="Ед. изм." Binding="{Binding Unit}" x:DataType="models:MaterialItem"/>
+                                        <DataGridTextColumn Header="Цена" Binding="{Binding PurchasePrice}" x:DataType="models:MaterialItem"/>
+                                        <DataGridTextColumn Header="Поставщик" Binding="{Binding MainSupplier}" x:DataType="models:MaterialItem"/>
+                                        <DataGridTextColumn Header="Срок поставки" Binding="{Binding DeliveryDays}" x:DataType="models:MaterialItem"/>
+                                        <DataGridTextColumn Header="Склад" Binding="{Binding WarehouseName}" x:DataType="models:MaterialItem"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Border>
+
+                            <StackPanel Grid.Row="1" Grid.Column="1" Spacing="10">
+                                <Border Background="#F1F1F1" BorderBrush="#4867AC" BorderThickness="1" CornerRadius="10" Padding="12">
+                                    <StackPanel Spacing="8">
+                                        <TextBlock Text="Карточка материала" FontWeight="SemiBold"/>
+                                        <TextBlock Text="Редактирование доступно по роли." FontSize="11" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Background="#FFFFFF" BorderBrush="#4867AC" BorderThickness="1" CornerRadius="10" Padding="12"
+                                        IsVisible="{Binding CanEditReferences}">
+                                    <StackPanel Spacing="10">
+                                        <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="10" RowSpacing="8">
+                                            <TextBlock Text="Наименование" VerticalAlignment="Center"/>
+                                            <TextBox Grid.Column="1" Text="{Binding SelectedMaterial.Name, Mode=TwoWay}"/>
+
+                                            <TextBlock Grid.Row="1" Text="Ед. изм." VerticalAlignment="Center"/>
+                                            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding SelectedMaterial.Unit, Mode=TwoWay}"/>
+
+                                            <TextBlock Grid.Row="2" Text="Кол-во" VerticalAlignment="Center"/>
+                                            <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding SelectedMaterial.Quantity, Mode=TwoWay}"/>
+
+                                            <TextBlock Grid.Row="3" Text="Цена" VerticalAlignment="Center"/>
+                                            <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding SelectedMaterial.PurchasePrice, Mode=TwoWay}"/>
+
+                                            <TextBlock Grid.Row="4" Text="Тип" VerticalAlignment="Center"/>
+                                            <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding SelectedMaterial.MaterialType, Mode=TwoWay}"/>
+
+                                            <TextBlock Grid.Row="5" Text="ГОСТ" VerticalAlignment="Center"/>
+                                            <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding SelectedMaterial.Gost, Mode=TwoWay}"/>
+                                        </Grid>
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <Button Content="Сохранить" Command="{Binding SaveSelectedMaterialCommand}"/>
+                                            <Button Content="Удалить (если кол-во = 0)" Classes="danger" Click="DeleteMaterialClick"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Background="#FEF9DE" BorderBrush="#F3CC8D" BorderThickness="1" CornerRadius="10" Padding="12"
+                                        IsVisible="{Binding CanAccessReferences}">
+                                    <TextBlock Text="Для конструктора и мастера раздел доступен только для просмотра." TextWrapping="Wrap"/>
+                                </Border>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <Border IsVisible="{Binding IsComponentsSection}" Background="White" BorderThickness="1" BorderBrush="#4867AC" CornerRadius="10" Padding="14">
+                        <Grid ColumnDefinitions="3*,2*" RowDefinitions="Auto,*" ColumnSpacing="12" RowSpacing="10">
+                            <StackPanel Grid.ColumnSpan="2" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                                <TextBlock Text="Комплектующие" FontSize="20" FontWeight="Bold"/>
+                                <Border Background="#FEF9DE" BorderBrush="#F3CC8D" BorderThickness="1" CornerRadius="10" Padding="10,6">
+                                    <TextBlock Text="{Binding ComponentsDisplayedCount, StringFormat='Показано: {0}'}"/>
+                                </Border>
+                                <Border Background="#FEF9DE" BorderBrush="#F3CC8D" BorderThickness="1" CornerRadius="10" Padding="10,6">
+                                    <TextBlock Text="{Binding ComponentsTotalCount, StringFormat='Всего: {0}'}"/>
+                                </Border>
+                                <Border Background="#FEF9DE" BorderBrush="#F3CC8D" BorderThickness="1" CornerRadius="10" Padding="10,6">
+                                    <TextBlock Text="{Binding ComponentsTotalCost, StringFormat='Сумма: {0:F2}'}"/>
+                                </Border>
+                            </StackPanel>
+
+                            <Border Grid.Row="1" Grid.Column="0" BorderBrush="#4867AC" BorderThickness="1" CornerRadius="10" Padding="10">
+                                <DataGrid Height="520"
+                                          ItemsSource="{Binding Components}"
+                                          SelectedItem="{Binding SelectedComponent, Mode=TwoWay}"
+                                          IsReadOnly="True"
+                                          AutoGenerateColumns="False"
+                                          HeadersVisibility="All">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Артикул" Binding="{Binding Article}" x:DataType="models:ComponentItem"/>
+                                        <DataGridTextColumn Header="Наименование" Binding="{Binding Name}" x:DataType="models:ComponentItem"/>
+                                        <DataGridTextColumn Header="Кол-во" Binding="{Binding Quantity}" x:DataType="models:ComponentItem"/>
+                                        <DataGridTextColumn Header="Ед. изм." Binding="{Binding Unit}" x:DataType="models:ComponentItem"/>
+                                        <DataGridTextColumn Header="Цена" Binding="{Binding PurchasePrice}" x:DataType="models:ComponentItem"/>
+                                        <DataGridTextColumn Header="Вес" Binding="{Binding Weight}" x:DataType="models:ComponentItem"/>
+                                        <DataGridTextColumn Header="Поставщик" Binding="{Binding MainSupplier}" x:DataType="models:ComponentItem"/>
+                                        <DataGridTextColumn Header="Срок поставки" Binding="{Binding DeliveryDays}" x:DataType="models:ComponentItem"/>
+                                        <DataGridTextColumn Header="Склад" Binding="{Binding WarehouseName}" x:DataType="models:ComponentItem"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Border>
+
+                            <StackPanel Grid.Row="1" Grid.Column="1" Spacing="10">
+                                <Border Background="#F1F1F1" BorderBrush="#4867AC" BorderThickness="1" CornerRadius="10" Padding="12">
+                                    <StackPanel Spacing="8">
+                                        <TextBlock Text="Карточка комплектующего" FontWeight="SemiBold"/>
+                                        <TextBlock Text="Выберите строку в таблице слева, чтобы изменить параметры."
+                                                   FontSize="11" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Background="#FFFFFF" BorderBrush="#4867AC" BorderThickness="1" CornerRadius="10" Padding="12"
+                                        IsVisible="{Binding CanEditReferences}">
+                                    <StackPanel Spacing="10">
+                                        <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="10" RowSpacing="8">
+                                            <TextBlock Text="Наименование" VerticalAlignment="Center"/>
+                                            <TextBox Grid.Column="1" Text="{Binding SelectedComponent.Name, Mode=TwoWay}"/>
+
+                                            <TextBlock Grid.Row="1" Text="Ед. изм." VerticalAlignment="Center"/>
+                                            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding SelectedComponent.Unit, Mode=TwoWay}"/>
+
+                                            <TextBlock Grid.Row="2" Text="Кол-во" VerticalAlignment="Center"/>
+                                            <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding SelectedComponent.Quantity, Mode=TwoWay}"/>
+
+                                            <TextBlock Grid.Row="3" Text="Цена" VerticalAlignment="Center"/>
+                                            <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding SelectedComponent.PurchasePrice, Mode=TwoWay}"/>
+
+                                            <TextBlock Grid.Row="4" Text="Тип" VerticalAlignment="Center"/>
+                                            <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding SelectedComponent.ComponentType, Mode=TwoWay}"/>
+
+                                            <TextBlock Grid.Row="5" Text="Вес" VerticalAlignment="Center"/>
+                                            <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding SelectedComponent.Weight, Mode=TwoWay}"/>
+                                        </Grid>
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <Button Content="Сохранить" Command="{Binding SaveSelectedComponentCommand}"/>
+                                            <Button Content="Удалить (если кол-во = 0)" Classes="danger" Click="DeleteComponentClick"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <Border IsVisible="{Binding IsWorkersSection}" Background="White" BorderThickness="1" BorderBrush="#4867AC" CornerRadius="10" Padding="14">
+                        <Grid ColumnDefinitions="3*,2*" RowDefinitions="Auto,*" ColumnSpacing="12" RowSpacing="10">
+                            <Grid Grid.ColumnSpan="2" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10" VerticalAlignment="Center">
+                                <TextBlock Text="Кадры предприятия" FontSize="20" FontWeight="Bold"/>
+                                <Border Grid.Column="1" Background="#FEF9DE" BorderBrush="#F3CC8D" BorderThickness="1" CornerRadius="10" Padding="10,6">
+                                    <TextBlock Text="{Binding WorkersCount, StringFormat='Записей: {0}'}"/>
+                                </Border>
+                                <Button Grid.Column="2" Content="Обновить" Command="{Binding RefreshWorkersCommand}"/>
+                            </Grid>
+
+                            <Border Grid.Row="1" Grid.Column="0" BorderBrush="#4867AC" BorderThickness="1" CornerRadius="10" Padding="10">
+                                <DataGrid Height="520"
+                                          HorizontalAlignment="Stretch"
+                                          ItemsSource="{Binding Workers}"
+                                          SelectedItem="{Binding SelectedWorker, Mode=TwoWay}"
+                                          IsReadOnly="True"
+                                          AutoGenerateColumns="False"
+                                          HeadersVisibility="All"
+                                          CanUserSortColumns="False"
+                                          CanUserResizeColumns="True"
+                                          GridLinesVisibility="All"
+                                          Foreground="#000000">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Binding="{Binding FullName}" Width="200" x:DataType="models:WorkerItem">
+                                            <DataGridTextColumn.Header>
+                                                <TextBlock Text="ФИО" Foreground="#FFFFFF" FontWeight="SemiBold"/>
+                                            </DataGridTextColumn.Header>
+                                        </DataGridTextColumn>
+                                        <DataGridTextColumn Binding="{Binding Age}" Width="85" x:DataType="models:WorkerItem">
+                                            <DataGridTextColumn.Header>
+                                                <TextBlock Text="Возраст" Foreground="#FFFFFF" FontWeight="SemiBold"/>
+                                            </DataGridTextColumn.Header>
+                                        </DataGridTextColumn>
+                                        <DataGridTextColumn Binding="{Binding BirthDate, StringFormat={}{0:dd.MM.yyyy}}" Width="130" x:DataType="models:WorkerItem">
+                                            <DataGridTextColumn.Header>
+                                                <TextBlock Text="Дата рождения" Foreground="#FFFFFF" FontWeight="SemiBold"/>
+                                            </DataGridTextColumn.Header>
+                                        </DataGridTextColumn>
+                                        <DataGridTextColumn Binding="{Binding Qualification}" Width="170" x:DataType="models:WorkerItem">
+                                            <DataGridTextColumn.Header>
+                                                <TextBlock Text="Квалификация" Foreground="#FFFFFF" FontWeight="SemiBold"/>
+                                            </DataGridTextColumn.Header>
+                                        </DataGridTextColumn>
+                                        <DataGridTextColumn Binding="{Binding OperationsCsv}" Width="220" x:DataType="models:WorkerItem">
+                                            <DataGridTextColumn.Header>
+                                                <TextBlock Text="Операции" Foreground="#FFFFFF" FontWeight="SemiBold"/>
+                                            </DataGridTextColumn.Header>
+                                        </DataGridTextColumn>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Border>
+
+                            <StackPanel Grid.Row="1" Grid.Column="1" Spacing="10">
+                                <Border Background="#F1F1F1" BorderBrush="#4867AC" BorderThickness="1" CornerRadius="10" Padding="12">
+                                    <StackPanel Spacing="8">
+                                        <TextBlock Text="Анкета работника" FontWeight="SemiBold"/>
+                                        <TextBlock Text="Заполните поля и отметьте доступные операции." FontSize="11" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Background="#FFFFFF" BorderBrush="#4867AC" BorderThickness="1" CornerRadius="10" Padding="12">
+                                    <StackPanel Spacing="10">
+                                        <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="10" RowSpacing="8">
+                                            <TextBlock Text="ФИО"/>
+                                            <TextBox Grid.Column="1" Text="{Binding WorkerFullName, Mode=TwoWay}"/>
+                                            <TextBlock Grid.Row="1" Text="Дата рождения"/>
+                                            <CalendarDatePicker Grid.Column="1" Grid.Row="1"
+                                                                SelectedDate="{Binding WorkerBirthDateCalendar, Mode=TwoWay}"
+                                                                SelectedDateFormat="Custom"
+                                                                CustomDateFormatString="dd.MM.yyyy"/>
+                                            <TextBlock Grid.Row="2" Text="Домашний адрес"/>
+                                            <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding WorkerHomeAddress, Mode=TwoWay}" AcceptsReturn="True" MinHeight="52"/>
+                                            <TextBlock Grid.Row="3" Text="Образование"/>
+                                            <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding WorkerEducation, Mode=TwoWay}"/>
+                                            <TextBlock Grid.Row="4" Text="Квалификация"/>
+                                            <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding WorkerQualification, Mode=TwoWay}"/>
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Background="#FEF9DE" BorderBrush="#F3CC8D" BorderThickness="1" CornerRadius="10" Padding="12">
+                                    <StackPanel Spacing="8">
+                                        <TextBlock Text="Допустимые операции" FontWeight="SemiBold"/>
+                                        <ItemsControl ItemsSource="{Binding Operations}">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <WrapPanel Orientation="Horizontal"/>
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate x:DataType="models:OperationOption">
+                                                    <Border Background="#FFFFFF" BorderBrush="#4867AC" BorderThickness="1"
+                                                            CornerRadius="8" Padding="8,6" Margin="0,0,6,6">
+                                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                                            <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}" Classes="auth" VerticalAlignment="Center"/>
+                                                            <TextBlock Text="{Binding Name}" Foreground="#000000" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="220"/>
+                                                        </StackPanel>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </StackPanel>
+                                </Border>
+
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <Button Content="Новая запись" Command="{Binding NewWorkerCommand}" HorizontalAlignment="Stretch"/>
+                                    <Button Content="Сохранить" Command="{Binding SaveWorkerCommand}" HorizontalAlignment="Stretch"/>
+                                    <Button Content="Удалить" Classes="danger" Click="DeleteWorkerClick" HorizontalAlignment="Stretch"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <Border IsVisible="{Binding IsOrdersSection}" Background="White" BorderThickness="1" BorderBrush="#4867AC" CornerRadius="10" Padding="14">
+                        <Grid RowDefinitions="Auto,*" ColumnDefinitions="2*,3*">
+                            <Grid Grid.ColumnSpan="2" ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" Margin="0,0,0,10" ColumnSpacing="10" RowSpacing="8">
+                                <TextBlock Text="Заказы" FontSize="20" FontWeight="Bold"/>
+                                <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="8">
+                                    <ComboBox Width="220" ItemsSource="{Binding OrderFilterItems}"
+                                              SelectedItem="{Binding SelectedOrderFilter, Mode=TwoWay}">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate x:DataType="models:FilterOption">
+                                                <TextBlock Text="{Binding DisplayName}"/>
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                    <Button Content="Обновить список" Command="{Binding RefreshOrdersCommand}"/>
+                                </StackPanel>
+                                <Border Grid.Column="1" Grid.RowSpan="2" Background="#FEF9DE" BorderBrush="#F3CC8D" BorderThickness="1" CornerRadius="10" Padding="12">
+                                    <StackPanel Spacing="8">
+                                        <TextBlock Text="Действия" FontWeight="SemiBold"/>
+                                        <Button Content="Новый заказ" Command="{Binding NewOrderCommand}" IsVisible="{Binding CanCreateOrder}" HorizontalAlignment="Stretch"/>
+                                        <Button Content="Расчёт" Command="{Binding OpenPlanningForSelectedOrderCommand}" IsVisible="{Binding CanAccessPlanning}" HorizontalAlignment="Stretch"/>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+                            <ScrollViewer Grid.Row="1" Grid.Column="0" HorizontalScrollBarVisibility="Auto"
+                                          VerticalScrollBarVisibility="Disabled">
+                                <DataGrid Height="320" MinWidth="900" ItemsSource="{Binding Orders}"
+                                          SelectedItem="{Binding SelectedOrder, Mode=TwoWay}" IsReadOnly="True"
+                                          CanUserSortColumns="False">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="№" Binding="{Binding OrderCode}" Width="100" x:DataType="models:OrderListItem"/>
+                                        <DataGridTextColumn Header="Дата" Binding="{Binding OrderDate, StringFormat={}{0:dd.MM.yyyy}}" Width="90" x:DataType="models:OrderListItem"/>
+                                        <DataGridTextColumn Header="Наименование" Binding="{Binding OrderName}" Width="160" x:DataType="models:OrderListItem"/>
+                                        <DataGridTextColumn Header="Статус" Binding="{Binding StatusName}" Width="150" x:DataType="models:OrderListItem"/>
+                                        <DataGridTextColumn Header="Стоимость" Binding="{Binding CostDisplay}" Width="90" x:DataType="models:OrderListItem"/>
+                                        <DataGridTextColumn Header="План. дата" Binding="{Binding PlannedDateDisplay}" Width="95" x:DataType="models:OrderListItem"/>
+                                        <DataGridTextColumn Header="Менеджер" Binding="{Binding ManagerDisplay}" Width="140" x:DataType="models:OrderListItem"/>
+                                        <DataGridTextColumn Header="Заказчик" Binding="{Binding CustomerName}" Width="140" x:DataType="models:OrderListItem"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </ScrollViewer>
+                            <StackPanel Grid.Row="1" Grid.Column="1" Margin="12,0,0,0" Spacing="10">
+                                <Border Background="#F1F1F1" BorderBrush="#4867AC" BorderThickness="1" CornerRadius="10" Padding="12">
+                                    <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" ColumnSpacing="10" RowSpacing="8">
+                                        <StackPanel Spacing="2">
+                                            <TextBlock Text="Карточка заказа" FontWeight="Bold"/>
+                                            <TextBlock Text="{Binding OrderEditor.OrderCode, StringFormat='Код: {0}'}"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                            <Button Content="Сохранить" Command="{Binding SaveOrderCommand}" IsVisible="{Binding CanSaveOrder}"/>
+                                            <Button Content="Сохранить данные" Command="{Binding SaveOrderDetailsCommand}" IsVisible="{Binding CanSaveOrderDetails}"/>
+                                            <Button Content="Удалить" Classes="danger" Command="{Binding DeleteOrderCommand}"/>
+                                        </StackPanel>
+                                        <TextBlock Grid.Row="1" Grid.ColumnSpan="2"
+                                                   Text="{Binding OrderEditor.StatusName, StringFormat='Текущий статус: {0}'}"
+                                                   Foreground="#000000"/>
+                                    </Grid>
+                                </Border>
+
+                                <TextBlock Text="Наименование" FontWeight="SemiBold"/>
+                                <TextBox Watermark="Например: Ленточный конвейер" Text="{Binding OrderEditor.OrderName, Mode=TwoWay}"
+                                          IsVisible="{Binding ShowOrderFieldsEditable}"/>
+                                <TextBlock Text="{Binding OrderNameDisplay}" TextWrapping="Wrap"
+                                           IsVisible="{Binding ShowOrderFieldsReadOnly}"/>
+
+                                <TextBlock Text="Описание изделия" FontWeight="SemiBold"/>
+                                <TextBox Watermark="Опишите требования к конвейеру" Text="{Binding OrderEditor.Description, Mode=TwoWay}"
+                                          AcceptsReturn="True" Height="60" IsVisible="{Binding ShowOrderFieldsEditable}"/>
+                                <TextBlock Text="{Binding OrderDescriptionDisplay}" TextWrapping="Wrap"
+                                           Foreground="#333333" IsVisible="{Binding ShowOrderFieldsReadOnly}"/>
+
+                                <TextBlock Text="Размеры" FontWeight="SemiBold"/>
+                                <TextBlock Text="не указаны" Foreground="#666666"
+                                           IsVisible="{Binding ShowOrderDimensionsEmpty}"/>
+                                <ItemsControl ItemsSource="{Binding OrderDimensions}" IsVisible="{Binding ShowOrderFieldsEditable}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="models:OrderDimensionRow">
+                                            <Grid ColumnDefinitions="Auto,Auto,*" Margin="0,2">
+                                                <ComboBox Grid.Column="0" Width="110" Margin="0,0,4,0"
+                                                          ItemsSource="{x:Static models:OrderDimensionRow.NameOptions}"
+                                                          SelectedItem="{Binding Name, Mode=TwoWay}"/>
+                                                <ComboBox Grid.Column="1" Width="72" Margin="0,0,4,0"
+                                                          ItemsSource="{x:Static models:OrderDimensionRow.UnitOptions}"
+                                                          SelectedItem="{Binding Unit, Mode=TwoWay}"/>
+                                                <TextBox Grid.Column="2" Watermark="Значение" Text="{Binding ValueText, Mode=TwoWay}"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <ItemsControl ItemsSource="{Binding OrderDimensions}" IsVisible="{Binding ShowOrderFieldsReadOnly}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="models:OrderDimensionRow">
+                                            <TextBlock Text="{Binding DisplayText}" Margin="0,2"/>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <StackPanel Orientation="Horizontal" Spacing="6" IsVisible="{Binding ShowOrderFieldsEditable}">
+                                    <Button Content="+ Размер" Command="{Binding AddOrderDimensionCommand}"/>
+                                    <Button Content="− Размер" Command="{Binding RemoveLastOrderDimensionCommand}"/>
+                                </StackPanel>
+
+                                <TextBlock Text="Чертежи и схемы" FontWeight="SemiBold"
+                                           IsVisible="{Binding ShowOrderAttachmentsSection}"/>
+                                <TextBlock Text="файлы не прикреплены" Foreground="#666666"
+                                           IsVisible="{Binding ShowOrderAttachmentsEmpty}"/>
+                                <ItemsControl ItemsSource="{Binding OrderAttachments}"
+                                              IsVisible="{Binding ShowOrderAttachmentsSection}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="models:OrderAttachmentRow">
+                                            <Grid ColumnDefinitions="*,Auto,Auto" Margin="0,2" ColumnSpacing="4">
+                                                <TextBlock Grid.Column="0" Text="{Binding DisplayText}" TextWrapping="Wrap"/>
+                                                <Button Grid.Column="1" Content="Сохранить" Padding="6,2"
+                                                        Tag="{Binding}" Click="SaveOrderAttachmentClick"
+                                                        IsVisible="{Binding CanExport}"/>
+                                                <Button Grid.Column="2" Content="Удалить" Classes="danger" Padding="6,2"
+                                                        Command="{Binding $parent[UserControl].((vm:MainViewModel)DataContext).RemoveOrderAttachmentCommand}"
+                                                        CommandParameter="{Binding}"
+                                                        IsVisible="{Binding $parent[UserControl].((vm:MainViewModel)DataContext).CanEditOrderAttachments}"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <StackPanel Orientation="Horizontal" Spacing="6"
+                                            IsVisible="{Binding CanEditOrderAttachments}">
+                                    <Button Content="+ Прикрепить файлы" Click="AddOrderFilesClick"/>
+                                </StackPanel>
+
+                                <TextBlock Text="Стоимость и срок задаёт менеджер/конструктор после расчёта."
+                                           Foreground="#555555" TextWrapping="Wrap"
+                                           IsVisible="{Binding HideOrderCostAndDateFields}"/>
+
+                                <TextBlock Text="{Binding OrderCostAndDateDisplay}" TextWrapping="Wrap"
+                                           IsVisible="{Binding ShowOrderCostAndDateReadOnly}"/>
+
+                                <TextBox Watermark="Стоимость" Text="{Binding OrderCostText, Mode=TwoWay}"
+                                         IsVisible="{Binding CanEditOrderCostAndDate}"/>
+                                <CalendarDatePicker SelectedDate="{Binding OrderPlannedDateCalendar, Mode=TwoWay}"
+                                                    SelectedDateFormat="Custom"
+                                                    CustomDateFormatString="dd.MM.yyyy"
+                                                    IsVisible="{Binding CanEditOrderCostAndDate}"/>
+
+                                <TextBlock Text="Заказчик" FontWeight="SemiBold" IsVisible="{Binding ShowOrderCustomerReadOnly}"/>
+                                <TextBlock Text="{Binding OrderCustomerDisplay}" TextWrapping="Wrap"
+                                           IsVisible="{Binding ShowOrderCustomerReadOnly}"/>
+                                <TextBlock Text="Заказчик" FontWeight="SemiBold" IsVisible="{Binding CanEditCustomerLogin}"/>
+                                <ComboBox ItemsSource="{Binding Customers}" SelectedItem="{Binding SelectedOrderCustomer, Mode=TwoWay}"
+                                          IsVisible="{Binding CanEditCustomerLogin}" PlaceholderText="Выберите заказчика">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate x:DataType="models:UserOption">
+                                            <TextBlock Text="{Binding DisplayName}"/>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                                <Border BorderBrush="#D8D8D8" BorderThickness="1" CornerRadius="6" Padding="8"
+                                        IsVisible="{Binding CanCreateCustomerForOrder}">
+                                    <StackPanel Spacing="6">
+                                        <TextBlock Text="Новый заказчик (если нет в списке)" FontWeight="SemiBold"/>
+                                        <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="6" RowSpacing="6">
+                                            <TextBlock Text="ФИО" VerticalAlignment="Center"/>
+                                            <TextBox Grid.Column="1" Text="{Binding NewCustomerFullName, Mode=TwoWay}" Watermark="Иванов Иван Иванович"/>
+                                            <TextBlock Grid.Row="1" Text="Логин" VerticalAlignment="Center"/>
+                                            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding NewCustomerLogin, Mode=TwoWay}" Watermark="уникальный логин"/>
+                                            <TextBlock Grid.Row="2" Text="Пароль" VerticalAlignment="Center"/>
+                                            <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding NewCustomerPassword, Mode=TwoWay}" PasswordChar="●"/>
+                                        </Grid>
+                                        <Button Content="+ Создать заказчика" Command="{Binding CreateOrderCustomerCommand}"/>
+                                    </StackPanel>
+                                </Border>
+                                <StackPanel Spacing="6" IsVisible="{Binding CanChangeOrderStatus}">
+                                    <TextBlock Text="Смена статуса" FontWeight="SemiBold"/>
+                                    <TextBlock Text="{Binding OrderStatusHelpText}" TextWrapping="Wrap"
+                                               Foreground="#555555" IsVisible="{Binding ShowOrderStatusHelp}"/>
+                                    <ComboBox MinWidth="300" ItemsSource="{Binding AvailableStatusTransitions}"
+                                              SelectedItem="{Binding SelectedStatusTransition, Mode=TwoWay}"
+                                              IsVisible="{Binding HasAvailableStatusTransitions}"
+                                              PlaceholderText="Выберите действие">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate x:DataType="models:FilterOption">
+                                                <TextBlock Text="{Binding DisplayName}"/>
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                    <TextBox Watermark="Причина отклонения (обязательно)"
+                                             Text="{Binding OrderActionComment, Mode=TwoWay}"
+                                             AcceptsReturn="True" Height="50"
+                                             IsVisible="{Binding ShowStatusCommentField}"/>
+                                    <Button Content="Сохранить статус" Command="{Binding ApplyOrderStatusCommand}"
+                                            IsVisible="{Binding HasAvailableStatusTransitions}"/>
+                                </StackPanel>
+                                <DataGrid Height="120" ItemsSource="{Binding OrderHistory}" IsVisible="{Binding CanViewOrderHistory}" IsReadOnly="True">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Когда" Binding="{Binding ChangedAt}" x:DataType="models:OrderHistoryItem"/>
+                                        <DataGridTextColumn Header="Статус" Binding="{Binding StatusName}" x:DataType="models:OrderHistoryItem"/>
+                                        <DataGridTextColumn Header="Кто" Binding="{Binding ChangedBy}" x:DataType="models:OrderHistoryItem"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <Border IsVisible="{Binding IsWorkshopSection}" Background="White" BorderThickness="1" BorderBrush="#4867AC" CornerRadius="10" Padding="14">
+                        <Grid RowDefinitions="Auto,*" ColumnSpacing="12">
+                            <Border Grid.Row="0" Background="#4867AC" CornerRadius="10" Padding="14,10">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <StackPanel Spacing="4">
+                                        <TextBlock Text="План размещения оборудования" FontSize="18" FontWeight="Bold" Foreground="#FFFFFF"/>
+                                        <TextBlock Text="Редактирование схемы цеха и размещение значков безопасности"
+                                                   Foreground="#F3CC8D" FontSize="12"/>
+                                    </StackPanel>
+                                    <ComboBox Grid.Column="1" Width="300" VerticalAlignment="Center"
+                                              ItemsSource="{Binding Workshops}" SelectedItem="{Binding SelectedWorkshop, Mode=TwoWay}">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate x:DataType="models:WorkshopInfo">
+                                                <TextBlock Text="{Binding Name}"/>
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                </Grid>
+                            </Border>
+
+                            <Grid Grid.Row="1" ColumnDefinitions="300,*" ColumnSpacing="12">
+                                <StackPanel Spacing="10">
+                                    <Border Background="#F1F1F1" BorderBrush="#4867AC" BorderThickness="1" CornerRadius="10" Padding="12">
+                                        <StackPanel Spacing="8">
+                                            <TextBlock Text="Инструменты" FontWeight="SemiBold"/>
+                                            <ComboBox ItemsSource="{Binding PlanIconTypeItems}"
+                                                      SelectedItem="{Binding SelectedPlanIconTypeItem, Mode=TwoWay}"
+                                                      PlaceholderText="Тип для добавления">
+                                                <ComboBox.ItemTemplate>
+                                                    <DataTemplate x:DataType="models:FilterOption">
+                                                        <TextBlock Text="{Binding DisplayName}"/>
+                                                    </DataTemplate>
+                                                </ComboBox.ItemTemplate>
+                                            </ComboBox>
+                                            <Button Content="Поставить на схему" Command="{Binding AddWorkshopMarkerCommand}" HorizontalAlignment="Stretch"/>
+                                            <Button Content="Убрать выбранный" Command="{Binding RemoveSelectedWorkshopMarkerCommand}" HorizontalAlignment="Stretch"/>
+                                            <Border Height="1" Background="#F3CC8D"/>
+                                            <Button Content="Сбросить черновик" Command="{Binding ResetWorkshopDraftCommand}" HorizontalAlignment="Stretch"/>
+                                            <Button Content="Сохранить план" Command="{Binding SaveWorkshopPlanCommand}" HorizontalAlignment="Stretch"/>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <Border Background="#FEF9DE" BorderBrush="#F3CC8D" BorderThickness="1" CornerRadius="10" Padding="12">
+                                        <StackPanel Spacing="10">
+                                            <TextBlock Text="Палитра (перетащите на схему)" FontWeight="SemiBold"/>
+                                            <UniformGrid Columns="2" Rows="2">
+                                            <Border Background="#FFFFFF" BorderBrush="#4867AC" BorderThickness="1" CornerRadius="8"
+                                                    Padding="8" Margin="4" Tag="Equipment" PointerPressed="WorkshopIconPointerPressed" Cursor="Hand">
+                                                <StackPanel HorizontalAlignment="Center" Spacing="6">
+                                                    <Image Width="32" Height="32" Source="avares://Ranil_Uchebka/Assets/Icons/Equipment.png"/>
+                                                    <TextBlock Text="Оборудование" FontSize="11" HorizontalAlignment="Center"/>
+                                                </StackPanel>
+                                            </Border>
+                                            <Border Background="#FFFFFF" BorderBrush="#4867AC" BorderThickness="1" CornerRadius="8"
+                                                    Padding="8" Margin="4" Tag="FireExtinguisher" PointerPressed="WorkshopIconPointerPressed" Cursor="Hand">
+                                                <StackPanel HorizontalAlignment="Center" Spacing="6">
+                                                    <Image Width="32" Height="32" Source="avares://Ranil_Uchebka/Assets/Icons/FireExtinguisher.png"/>
+                                                    <TextBlock Text="Огнетушитель" FontSize="11" HorizontalAlignment="Center"/>
+                                                </StackPanel>
+                                            </Border>
+                                            <Border Background="#FFFFFF" BorderBrush="#4867AC" BorderThickness="1" CornerRadius="8"
+                                                    Padding="8" Margin="4" Tag="FirstAid" PointerPressed="WorkshopIconPointerPressed" Cursor="Hand">
+                                                <StackPanel HorizontalAlignment="Center" Spacing="6">
+                                                    <Image Width="32" Height="32" Source="avares://Ranil_Uchebka/Assets/Icons/FirstAid.png"/>
+                                                    <TextBlock Text="Аптечка" FontSize="11" HorizontalAlignment="Center"/>
+                                                </StackPanel>
+                                            </Border>
+                                            <Border Background="#FFFFFF" BorderBrush="#4867AC" BorderThickness="1" CornerRadius="8"
+                                                    Padding="8" Margin="4" Tag="Exit" PointerPressed="WorkshopIconPointerPressed" Cursor="Hand">
+                                                <StackPanel HorizontalAlignment="Center" Spacing="6">
+                                                    <Image Width="32" Height="32" Source="avares://Ranil_Uchebka/Assets/Icons/Exit.jpg"/>
+                                                    <TextBlock Text="Выход" FontSize="11" HorizontalAlignment="Center"/>
+                                                </StackPanel>
+                                            </Border>
+                                            </UniformGrid>
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+
+                                <Border Grid.Column="1" Background="#FFFFFF" BorderBrush="#4867AC" BorderThickness="1" CornerRadius="10" Padding="10" ClipToBounds="True">
+                                    <DockPanel LastChildFill="True">
+                                        <Border DockPanel.Dock="Top" Background="#F1F1F1" CornerRadius="6" Padding="8,10" Margin="0,0,0,8">
+                                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                                <TextBlock Text="Схема цеха" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                                                    <TextBlock Text="Масштаб" VerticalAlignment="Center"/>
+                                                    <Slider x:Name="WorkshopZoomSlider" Width="140" Minimum="0.6" Maximum="2.5" Value="1"
+                                                            ValueChanged="WorkshopZoomChanged"/>
+                                                    <TextBlock x:Name="WorkshopZoomText" Text="100%" VerticalAlignment="Center" MinWidth="40"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                        <Border DockPanel.Dock="Bottom" Background="#FEF9DE" CornerRadius="6" Padding="8" Margin="0,8,0,0">
+                                            <TextBlock Text="Перетаскивайте значки на схему. Выбранный элемент подсвечивается."
+                                                       FontSize="11" TextAlignment="Center" TextWrapping="Wrap"/>
+                                        </Border>
+                                        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                                            <Canvas x:Name="WorkshopCanvas" Width="1000" Height="520"
+                                                    Background="#F1F1F1"
+                                                    DragDrop.AllowDrop="True"
+                                                    DragDrop.DragOver="WorkshopCanvasDragOver"
+                                                    DragDrop.Drop="WorkshopCanvasDrop"/>
+                                        </ScrollViewer>
+                                    </DockPanel>
+                                </Border>
+                            </Grid>
+                        </Grid>
+                    </Border>
+
+                    <Border IsVisible="{Binding IsFailuresSection}" Background="White" BorderThickness="1" BorderBrush="#4867AC" CornerRadius="10" Padding="14">
+                        <Grid RowDefinitions="Auto,Auto,*" ColumnDefinitions="*,260" RowSpacing="10" ColumnSpacing="12">
+                            <TextBlock Grid.ColumnSpan="2" Text="Сбои оборудования (мастер)" FontSize="20" FontWeight="Bold"/>
+
+                            <Border Grid.Row="1" Background="#FEF9DE" BorderBrush="#F3CC8D" BorderThickness="1" CornerRadius="10" Padding="12">
+                                <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="10" RowSpacing="8">
+                                    <TextBlock Text="Оборудование" VerticalAlignment="Center"/>
+                                    <ComboBox Grid.Column="1" ItemsSource="{Binding EquipmentMarkings}" SelectedItem="{Binding FailureEquipment, Mode=TwoWay}"/>
+
+                                    <TextBlock Grid.Row="1" Text="Причина" VerticalAlignment="Center"/>
+                                    <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding FailureReasons}" SelectedItem="{Binding FailureReason, Mode=TwoWay}"/>
+
+                                    <TextBlock Grid.Row="2" Text="Начало" VerticalAlignment="Center"/>
+                                    <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                                        <CalendarDatePicker Width="200"
+                                                            SelectedDate="{Binding FailureStartDateCalendar, Mode=TwoWay}"
+                                                            SelectedDateFormat="Custom"
+                                                            CustomDateFormatString="dd.MM.yyyy"/>
+                                        <TextBox Width="90" Watermark="ЧЧ:ММ" Text="{Binding FailureStartTime, Mode=TwoWay}"/>
+                                    </StackPanel>
+
+                                    <TextBlock Grid.Row="3" Text="Окончание" VerticalAlignment="Center"/>
+                                    <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                                        <CalendarDatePicker Width="200"
+                                                            SelectedDate="{Binding FailureEndDateCalendar, Mode=TwoWay}"
+                                                            SelectedDateFormat="Custom"
+                                                            CustomDateFormatString="dd.MM.yyyy"/>
+                                        <TextBox Width="90" Watermark="ЧЧ:ММ" Text="{Binding FailureEndTime, Mode=TwoWay}"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <Border Grid.Row="1" Grid.Column="1" Background="#FFFFFF" BorderBrush="#4867AC" BorderThickness="1" CornerRadius="10" Padding="12">
+                                <StackPanel Spacing="10">
+                                    <TextBlock Text="Действия" FontWeight="SemiBold"/>
+                                    <Button Content="Зарегистрировать сбой" Command="{Binding RegisterFailureCommand}" HorizontalAlignment="Stretch"/>
+                                    <Button Content="Устранён" Command="{Binding EndFailureCommand}" HorizontalAlignment="Stretch"/>
+                                    <Button Content="Обновить список" Command="{Binding RefreshFailuresCommand}" HorizontalAlignment="Stretch"/>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Row="2" Grid.ColumnSpan="2" BorderBrush="#4867AC" BorderThickness="1" CornerRadius="10" Padding="10">
+                                <DataGrid Height="260"
+                                          ItemsSource="{Binding EquipmentFailures}"
+                                          SelectedItem="{Binding SelectedFailure, Mode=TwoWay}"
+                                          IsReadOnly="True"
+                                          AutoGenerateColumns="False">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Оборудование" Binding="{Binding EquipmentMarking}" x:DataType="models:EquipmentFailureRow"/>
+                                        <DataGridTextColumn Header="Причина" Binding="{Binding ReasonName}" x:DataType="models:EquipmentFailureRow"/>
+                                        <DataGridTextColumn Header="Начало" Binding="{Binding StartedAt}" x:DataType="models:EquipmentFailureRow"/>
+                                        <DataGridTextColumn Header="Окончание" Binding="{Binding EndedAt}" x:DataType="models:EquipmentFailureRow"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Border>
+                        </Grid>
+                    </Border>
+
+                    <Border IsVisible="{Binding IsQualitySection}" Background="White" BorderThickness="1" BorderBrush="#4867AC" CornerRadius="10" Padding="14">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="Контроль качества (мастер)" FontSize="20" FontWeight="Bold"/>
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <ComboBox Width="360" ItemsSource="{Binding Orders}" SelectedItem="{Binding QualityOrder, Mode=TwoWay}">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate x:DataType="models:OrderListItem">
+                                            <TextBlock Text="{Binding OrderCode}"/>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                                <Button Content="Загрузить параметры" Command="{Binding LoadQualityForOrderCommand}"/>
+                                <Button Content="Сохранить" Command="{Binding SaveQualityChecksCommand}"/>
+                                <Button Content="→ Контроль" Command="{Binding CompleteProductionCommand}"/>
+                                <Button Content="→ Готов" Command="{Binding MarkOrderReadyCommand}"/>
+                            </StackPanel>
+                            <Border BorderBrush="#4867AC" BorderThickness="1" CornerRadius="6" Padding="8">
+                                <StackPanel Spacing="4">
+                                    <Grid ColumnDefinitions="*,72,72,*" Margin="0,0,0,4">
+                                        <TextBlock Grid.Column="0" Text="Параметр" FontWeight="Bold"/>
+                                        <TextBlock Grid.Column="1" Text="+" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                        <TextBlock Grid.Column="2" Text="−" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                        <TextBlock Grid.Column="3" Text="Комментарий" FontWeight="Bold" Margin="8,0,0,0"/>
+                                    </Grid>
+                                    <ItemsControl ItemsSource="{Binding QualityChecks}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate x:DataType="models:QualityCheckRow">
+                                                <Grid ColumnDefinitions="*,72,72,*" Margin="0,4">
+                                                    <TextBlock Grid.Column="0" Text="{Binding ParameterName}"
+                                                               VerticalAlignment="Center" TextWrapping="Wrap"/>
+                                                    <Button Grid.Column="1" Content="+" Width="52" Height="40"
+                                                            Classes="qualityPlus"
+                                                            Classes.selected="{Binding IsPlusSelected}"
+                                                            Command="{Binding $parent[UserControl].((vm:MainViewModel)DataContext).SetQualityPlusCommand}"
+                                                            CommandParameter="{Binding}"
+                                                            HorizontalAlignment="Center"/>
+                                                    <Button Grid.Column="2" Content="−" Width="52" Height="40"
+                                                            Classes="qualityMinus"
+                                                            Classes.selected="{Binding IsMinusSelected}"
+                                                            Command="{Binding $parent[UserControl].((vm:MainViewModel)DataContext).SetQualityMinusCommand}"
+                                                            CommandParameter="{Binding}"
+                                                            HorizontalAlignment="Center"/>
+                                                    <TextBox Grid.Column="3" Text="{Binding Comment, Mode=TwoWay}"
+                                                             Watermark="Комментарий" Margin="8,0,0,0"
+                                                             VerticalAlignment="Center"/>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+
+                    <Border IsVisible="{Binding IsSpecificationsSection}" Background="White" BorderThickness="1" BorderBrush="#4867AC" CornerRadius="10" Padding="14">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="Спецификация на изделие (мастер)" FontSize="20" FontWeight="Bold"/>
+                            <Border Background="#F1F1F1" BorderBrush="#4867AC" BorderThickness="1" CornerRadius="10" Padding="12">
+                                <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" ColumnSpacing="10" RowSpacing="10">
+                                    <StackPanel Spacing="6">
+                                        <TextBlock Text="Изделие" FontWeight="SemiBold"/>
+                                        <ComboBox ItemsSource="{Binding Products}" SelectedItem="{Binding SelectedSpecProduct, Mode=TwoWay}">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate x:DataType="models:ProductOption">
+                                                    <TextBlock Text="{Binding Name}"/>
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Bottom">
+                                        <Button Content="Обновить" Command="{Binding RefreshSpecificationCommand}"/>
+                                        <Button Content="Сохранить" Command="{Binding SaveSpecificationCommand}"/>
+                                        <Button Content="Печать / экспорт" Click="ExportSpecificationClick"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Row="1" Grid.ColumnSpan="2" Spacing="6">
+                                        <TextBlock Text="Название изделия (для документа)" FontWeight="SemiBold"/>
+                                        <TextBox Text="{Binding SpecProductName, Mode=TwoWay}" Watermark="Название изделия"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <TextBlock Text="Индивидуальные размеры" FontWeight="SemiBold"/>
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <TextBox Width="180" Text="{Binding NewSpecDimensionName, Mode=TwoWay}" Watermark="Наименование замера"/>
+                                <TextBox Width="90" Text="{Binding NewSpecDimensionUnit, Mode=TwoWay}" Watermark="Ед. изм."/>
+                                <TextBox Width="90" Text="{Binding NewSpecDimensionValue, Mode=TwoWay}" Watermark="Значение"/>
+                                <Button Content="+ Замер" Command="{Binding AddSpecDimensionCommand}"/>
+                                <Button Content="Удалить последний" Command="{Binding RemoveLastSpecDimensionCommand}"/>
+                            </StackPanel>
+                            <DataGrid Height="110" ItemsSource="{Binding SpecDimensions}" AutoGenerateColumns="False" IsReadOnly="True">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Замер" Binding="{Binding DimensionName}" x:DataType="models:ProductDimensionRow"/>
+                                    <DataGridTextColumn Header="Ед. изм." Binding="{Binding Unit}" Width="90" x:DataType="models:ProductDimensionRow"/>
+                                    <DataGridTextColumn Header="Значение" Binding="{Binding DimensionValue}" Width="100" x:DataType="models:ProductDimensionRow"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            <TextBlock Text="Чертежи изделия" FontWeight="SemiBold"/>
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Button Content="Добавить файлы" Click="AddSpecFilesClick"/>
+                            </StackPanel>
+                            <ItemsControl ItemsSource="{Binding SpecAttachments}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="models:ProductAttachmentRow">
+                                        <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,4">
+                                            <TextBlock Text="{Binding DisplayText}" VerticalAlignment="Center"/>
+                                            <Button Content="Сохранить" Click="SaveSpecAttachmentClick" Tag="{Binding}"/>
+                                            <Button Content="Удалить" Classes="danger"
+                                                    Command="{Binding $parent[UserControl].((vm:MainViewModel)DataContext).RemoveSpecAttachmentCommand}"
+                                                    CommandParameter="{Binding}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <TextBlock Text="Материалы" FontWeight="SemiBold"/>
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <TextBox Width="160" Text="{Binding NewSpecMaterialArticle, Mode=TwoWay}" Watermark="Артикул"/>
+                                <TextBox Width="90" Text="{Binding NewSpecMaterialQuantity, Mode=TwoWay}" Watermark="Кол-во"/>
+                                <Button Content="+ Материал" Command="{Binding AddSpecMaterialCommand}"/>
+                                <Button Content="Удалить последний" Command="{Binding RemoveLastSpecMaterialCommand}"/>
+                            </StackPanel>
+                            <DataGrid Height="120" ItemsSource="{Binding SpecMaterials}" AutoGenerateColumns="False">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Артикул" Binding="{Binding Article}" x:DataType="models:SpecMaterialRow"/>
+                                    <DataGridTextColumn Header="Наименование" Binding="{Binding Name}" x:DataType="models:SpecMaterialRow"/>
+                                    <DataGridTextColumn Header="Кол-во" Binding="{Binding Quantity}" x:DataType="models:SpecMaterialRow"/>
+                                    <DataGridTextColumn Header="Ед." Binding="{Binding Unit}" x:DataType="models:SpecMaterialRow"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            <TextBlock Text="Комплектующие" FontWeight="SemiBold"/>
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <TextBox Width="160" Text="{Binding NewSpecComponentArticle, Mode=TwoWay}" Watermark="Артикул"/>
+                                <TextBox Width="90" Text="{Binding NewSpecComponentQuantity, Mode=TwoWay}" Watermark="Кол-во"/>
+                                <Button Content="+ Комплектующее" Command="{Binding AddSpecComponentCommand}"/>
+                                <Button Content="Удалить последний" Command="{Binding RemoveLastSpecComponentCommand}"/>
+                            </StackPanel>
+                            <DataGrid Height="120" ItemsSource="{Binding SpecComponents}" AutoGenerateColumns="False">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Артикул" Binding="{Binding Article}" x:DataType="models:SpecComponentRow"/>
+                                    <DataGridTextColumn Header="Наименование" Binding="{Binding Name}" x:DataType="models:SpecComponentRow"/>
+                                    <DataGridTextColumn Header="Кол-во" Binding="{Binding Quantity}" x:DataType="models:SpecComponentRow"/>
+                                    <DataGridTextColumn Header="Ед." Binding="{Binding Unit}" x:DataType="models:SpecComponentRow"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            <TextBlock Text="Сборочные единицы / детали" FontWeight="SemiBold"/>
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <ComboBox Width="220" ItemsSource="{Binding Products}" SelectedItem="{Binding NewSpecAssemblyProduct, Mode=TwoWay}">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate x:DataType="models:ProductOption">
+                                            <TextBlock Text="{Binding Name}"/>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                                <TextBox Width="90" Text="{Binding NewSpecAssemblyQuantity, Mode=TwoWay}" Watermark="Кол-во"/>
+                                <Button Content="+ Сборка" Command="{Binding AddSpecAssemblyCommand}"/>
+                                <Button Content="Удалить последний" Command="{Binding RemoveLastSpecAssemblyCommand}"/>
+                            </StackPanel>
+                            <DataGrid Height="110" ItemsSource="{Binding SpecAssemblies}" AutoGenerateColumns="False">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Изделие" Binding="{Binding ProductName}" x:DataType="models:SpecAssemblyRow"/>
+                                    <DataGridTextColumn Header="Кол-во" Binding="{Binding Quantity}" x:DataType="models:SpecAssemblyRow"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            <TextBlock Text="Операции" FontWeight="SemiBold"/>
+                            <Grid ColumnDefinitions="*,*,90,2*,Auto,Auto" ColumnSpacing="6">
+                                <TextBox Text="{Binding NewSpecOperationName, Mode=TwoWay}" Watermark="Операция"/>
+                                <ComboBox Grid.Column="1" ItemsSource="{Binding EquipmentTypes}" SelectedItem="{Binding NewSpecEquipmentType, Mode=TwoWay}"/>
+                                <TextBox Grid.Column="2" Text="{Binding NewSpecOperationTime, Mode=TwoWay}" Watermark="Мин."/>
+                                <TextBox Grid.Column="3" Text="{Binding NewSpecOperationDescription, Mode=TwoWay}" Watermark="Описание выполнения"/>
+                                <Button Grid.Column="4" Content="+ Операция" Command="{Binding AddSpecOperationCommand}"/>
+                                <Button Grid.Column="5" Content="Удалить последнюю" Command="{Binding RemoveLastSpecOperationCommand}"/>
+                            </Grid>
+                            <DataGrid Height="160" ItemsSource="{Binding SpecOperations}" AutoGenerateColumns="False">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="№" Binding="{Binding SequenceNumber}" Width="50" x:DataType="models:SpecOperationRow"/>
+                                    <DataGridTextColumn Header="Операция" Binding="{Binding OperationName}" x:DataType="models:SpecOperationRow"/>
+                                    <DataGridTextColumn Header="Тип оборудования" Binding="{Binding EquipmentTypeName}" x:DataType="models:SpecOperationRow"/>
+                                    <DataGridTextColumn Header="Мин." Binding="{Binding OperationTimeMin}" Width="70" x:DataType="models:SpecOperationRow"/>
+                                    <DataGridTextColumn Header="Описание" Binding="{Binding Description}" Width="220" x:DataType="models:SpecOperationRow"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </StackPanel>
+                    </Border>
+
+                    <Border IsVisible="{Binding IsPlanningSection}" Background="White" BorderThickness="1" BorderBrush="#4867AC" CornerRadius="10" Padding="14">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="Расчёт заказа: материалы, доставка и производство" FontSize="20" FontWeight="Bold"/>
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <ComboBox Width="360" ItemsSource="{Binding Orders}" SelectedItem="{Binding PlanningOrder, Mode=TwoWay}">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate x:DataType="models:OrderListItem">
+                                            <TextBlock Text="{Binding OrderCode}"/>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                                <Button Content="Рассчитать" Command="{Binding CalculateOrderPlanningCommand}"/>
+                                <Button Content="Печать / экспорт" Click="ExportPlanningClick"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="18">
+                                <TextBlock Text="{Binding RequirementTotalCost, StringFormat='Себестоимость: {0:F2}'}"/>
+                                <TextBlock Text="{Binding RequirementDeliveryDays, StringFormat='Доставка: {0} дн.'}"/>
+                                <TextBlock Text="{Binding ProductionTimeMinutes, StringFormat='Производство: {0} мин.'}"/>
+                                <TextBlock Text="{Binding TotalOrderTimeMinutes, StringFormat='Итого: {0} мин.'}"/>
+                            </StackPanel>
+                            <TextBlock Text="Материалы и комплектующие" FontWeight="SemiBold"/>
+                            <DataGrid Height="220" ItemsSource="{Binding RequirementRows}" IsReadOnly="True" AutoGenerateColumns="False">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Тип" Binding="{Binding Kind}" x:DataType="models:RequirementRow"/>
+                                    <DataGridTextColumn Header="Артикул" Binding="{Binding Article}" x:DataType="models:RequirementRow"/>
+                                    <DataGridTextColumn Header="Наименование" Binding="{Binding Name}" x:DataType="models:RequirementRow"/>
+                                    <DataGridTextColumn Header="Нужно" Binding="{Binding RequiredQuantity}" x:DataType="models:RequirementRow"/>
+                                    <DataGridTextColumn Header="Есть" Binding="{Binding AvailableQuantity}" x:DataType="models:RequirementRow"/>
+                                    <DataGridTextColumn Header="Не хватает" Binding="{Binding MissingQuantity}" x:DataType="models:RequirementRow"/>
+                                    <DataGridTextColumn Header="Цена" Binding="{Binding PurchasePrice}" x:DataType="models:RequirementRow"/>
+                                    <DataGridTextColumn Header="Себестоимость" Binding="{Binding Cost}" x:DataType="models:RequirementRow"/>
+                                    <DataGridTextColumn Header="Доставка, дн." Binding="{Binding DeliveryDays}" x:DataType="models:RequirementRow"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            <TextBlock Text="План производства (таблица)" FontWeight="SemiBold" Margin="0,8,0,0"/>
+                            <DataGrid Height="180" ItemsSource="{Binding GanttRows}" IsReadOnly="True" AutoGenerateColumns="False">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Оборудование" Binding="{Binding Equipment}" x:DataType="models:GanttRow"/>
+                                    <DataGridTextColumn Header="Изделие" Binding="{Binding ProductName}" x:DataType="models:GanttRow"/>
+                                    <DataGridTextColumn Header="Операция" Binding="{Binding OperationName}" x:DataType="models:GanttRow"/>
+                                    <DataGridTextColumn Header="Старт" Binding="{Binding StartMinute}" x:DataType="models:GanttRow"/>
+                                    <DataGridTextColumn Header="Длительность" Binding="{Binding DurationMinute}" x:DataType="models:GanttRow"/>
+                                    <DataGridTextColumn Header="Конец" Binding="{Binding EndMinute}" x:DataType="models:GanttRow"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </StackPanel>
+                    </Border>
+
+                    <Border IsVisible="{Binding IsStockReportSection}" Background="White" BorderThickness="1" BorderBrush="#4867AC" CornerRadius="10" Padding="14">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="Отчёт по остаткам материалов и комплектующих" FontSize="20" FontWeight="Bold"/>
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <ComboBox Width="180" ItemsSource="{Binding StockReportKindItems}" SelectedItem="{Binding SelectedStockReportKind, Mode=TwoWay}">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate x:DataType="models:FilterOption">
+                                            <TextBlock Text="{Binding DisplayName}"/>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                                <ComboBox Width="240" ItemsSource="{Binding StockReportTypes}" SelectedItem="{Binding SelectedStockReportType, Mode=TwoWay}"/>
+                                <Button Content="Обновить" Command="{Binding RefreshStockReportCommand}"/>
+                                <Button Content="Печать / экспорт" Click="ExportStockReportClick"/>
+                            </StackPanel>
+                            <TextBlock Text="{Binding StockReportTotalQuantity, StringFormat='Общий остаток: {0:F3}'}"/>
+                            <ItemsControl ItemsSource="{Binding StockReportGroups}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="models:StockReportWarehouseGroup">
+                                        <Border BorderBrush="#4867AC" BorderThickness="1" CornerRadius="8" Padding="10" Margin="0,0,0,10">
+                                            <StackPanel Spacing="6">
+                                                <TextBlock Text="{Binding WarehouseName, StringFormat='Склад: {0}'}" FontWeight="Bold" FontSize="15"/>
+                                                <Grid ColumnDefinitions="*,*,*,*,*" Margin="0,0,0,4">
+                                                    <TextBlock Grid.Column="0" Text="Тип" FontWeight="Bold"/>
+                                                    <TextBlock Grid.Column="1" Text="Артикул" FontWeight="Bold"/>
+                                                    <TextBlock Grid.Column="2" Text="Наименование" FontWeight="Bold"/>
+                                                    <TextBlock Grid.Column="3" Text="Кол-во" FontWeight="Bold"/>
+                                                    <TextBlock Grid.Column="4" Text="Ед." FontWeight="Bold"/>
+                                                </Grid>
+                                                <ItemsControl ItemsSource="{Binding Rows}">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate x:DataType="models:StockReportRow">
+                                                            <Grid ColumnDefinitions="*,*,*,*,*" Margin="0,2">
+                                                                <TextBlock Grid.Column="0" Text="{Binding TypeName}" TextTrimming="CharacterEllipsis"/>
+                                                                <TextBlock Grid.Column="1" Text="{Binding Article}" TextTrimming="CharacterEllipsis"/>
+                                                                <TextBlock Grid.Column="2" Text="{Binding Name}" TextTrimming="CharacterEllipsis"/>
+                                                                <TextBlock Grid.Column="3" Text="{Binding Quantity, StringFormat='{}{0:F3}'}"/>
+                                                                <TextBlock Grid.Column="4" Text="{Binding Unit}"/>
+                                                            </Grid>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                                <TextBlock Text="{Binding TotalQuantity, StringFormat='Итого по складу: {0:F3}'}"
+                                                           FontWeight="SemiBold" Foreground="#4867AC"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+    </DockPanel>
+</UserControl>

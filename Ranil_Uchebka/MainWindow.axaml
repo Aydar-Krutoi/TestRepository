@@ -1,0 +1,54 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:Ranil_Uchebka.ViewModels"
+        xmlns:views="using:Ranil_Uchebka.Views"
+        mc:Ignorable="d"
+        x:Class="Ranil_Uchebka.MainWindow"
+        x:DataType="vm:MainViewModel"
+        Width="1400"
+        Height="920"
+        MinWidth="1200"
+        MinHeight="780"
+        Title="Учебное задание">
+    <DockPanel>
+        <Border DockPanel.Dock="Top" Background="#4867AC">
+            <Grid RowDefinitions="Auto,Auto">
+                <Border Background="#BB0C07" Height="6"/>
+                <Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto" Margin="18,12">
+                    <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                        <Border Width="54" Height="54" Background="#FFFFFF" CornerRadius="27" Padding="8">
+                            <Image Source="avares://Ranil_Uchebka/Assets/Logo_Color.png"
+                                   Stretch="Uniform"/>
+                        </Border>
+                        <StackPanel Spacing="2">
+                            <TextBlock Text="{Binding ScreenTitle}"
+                                       Foreground="#FFFFFF"
+                                       FontSize="18"
+                                       FontWeight="SemiBold"/>
+                            <TextBlock Text="Автоматизация производственного контура"
+                                       Foreground="#F3CC8D"
+                                       FontSize="12"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                        <Border Background="#F3CC8D" CornerRadius="8" Padding="10,5"
+                                IsVisible="{Binding IsAuthenticated}">
+                            <TextBlock Text="{Binding CurrentUserDisplay}" Foreground="#000000" VerticalAlignment="Center"/>
+                        </Border>
+                        <Button Content="Завершить сеанс"
+                                IsVisible="{Binding IsAuthenticated}"
+                                Command="{Binding LogoutCommand}"/>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+        </Border>
+
+        <Grid>
+            <views:LoginView IsVisible="{Binding IsLoginPage}" DataContext="{Binding}"/>
+            <views:RegisterView IsVisible="{Binding IsRegisterPage}" DataContext="{Binding}"/>
+            <views:ShellView IsVisible="{Binding IsAuthenticated}" DataContext="{Binding}"/>
+        </Grid>
+    </DockPanel>
+</Window>

@@ -1,0 +1,72 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Ranil_Uchebka.ViewModels"
+             x:Class="Ranil_Uchebka.Views.LoginView"
+             x:DataType="vm:MainViewModel">
+    <Grid Background="#F1F1F1">
+        <Border Width="820"
+                MaxWidth="820"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Background="#FFFFFF"
+                BorderBrush="#4867AC"
+                BorderThickness="2"
+                CornerRadius="16">
+            <Grid ColumnDefinitions="290,*">
+                <Border Background="#4867AC" CornerRadius="14,0,0,14" Padding="24">
+                    <StackPanel VerticalAlignment="Center" Spacing="10">
+                        <TextBlock Text="Система управления"
+                                   Foreground="#F3CC8D"
+                                   FontSize="13"
+                                   FontWeight="SemiBold"/>
+                        <TextBlock Text="Вход"
+                                   Foreground="#FFFFFF"
+                                   FontSize="18"
+                                   FontWeight="Bold"/>
+                        <TextBlock Text="Работа с заказами, производством и отчётностью в едином пространстве."
+                                   Foreground="#FFFFFF"
+                                   TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Border>
+
+                <StackPanel Grid.Column="1" Margin="34,28" Spacing="10">
+                    <TextBlock Text="Авторизация пользователя" FontSize="18" FontWeight="Bold"/>
+                    <TextBlock Text="Введите данные учётной записи" Foreground="#000000"/>
+
+                    <TextBlock Text="Логин" Margin="0,6,0,0"/>
+                    <TextBox Text="{Binding Login, Mode=TwoWay}" Watermark="например, loginDE001"/>
+                    <TextBlock Text="Пароль"/>
+                    <TextBox Text="{Binding Password, Mode=TwoWay}" PasswordChar="●"/>
+
+                    <CheckBox Classes="auth"
+                              Content="Запомнить меня"
+                              IsChecked="{Binding RememberMe}"
+                              Margin="0,4,0,0"/>
+
+                    <Button Content="Открыть рабочее место"
+                            Command="{Binding LoginCommand}"
+                            Classes="primary"
+                            HorizontalAlignment="Left"
+                            Margin="0,8,0,0"/>
+
+                    <TextBlock Text="{Binding AuthError}"
+                               Foreground="#BB0C07"
+                               TextWrapping="Wrap"
+                               MaxWidth="420"/>
+                    <TextBlock Text="{Binding RegisterSuccess}"
+                               Foreground="#4867AC"
+                               TextWrapping="Wrap"
+                               MaxWidth="420"/>
+
+                    <Border Height="1" Background="#F3CC8D" Margin="0,10,0,4"/>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="Нет аккаунта?" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <Button Content="Создать сейчас"
+                                Command="{Binding OpenRegisterPageCommand}"
+                                Classes="link"/>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

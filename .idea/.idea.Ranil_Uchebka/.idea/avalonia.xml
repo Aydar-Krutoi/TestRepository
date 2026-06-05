@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AvaloniaProject">
+    <option name="projectPerEditor">
+      <map>
+        <entry key="Ranil_Uchebka/App.axaml" value="Ranil_Uchebka/Ranil_Uchebka.csproj" />
+        <entry key="Ranil_Uchebka/MainWindow.axaml" value="Ranil_Uchebka/Ranil_Uchebka.csproj" />
+        <entry key="Ranil_Uchebka/Views/GanttChartView.axaml" value="Ranil_Uchebka/Ranil_Uchebka.csproj" />
+        <entry key="Ranil_Uchebka/Views/LoginView.axaml" value="Ranil_Uchebka/Ranil_Uchebka.csproj" />
+        <entry key="Ranil_Uchebka/Views/RegisterView.axaml" value="Ranil_Uchebka/Ranil_Uchebka.csproj" />
+        <entry key="Ranil_Uchebka/Views/ShellView.axaml" value="Ranil_Uchebka/Ranil_Uchebka.csproj" />
+      </map>
+    </option>
+  </component>
+</project>

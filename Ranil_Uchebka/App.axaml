@@ -1,0 +1,428 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Ranil_Uchebka.App"
+             RequestedThemeVariant="Default">
+    <Application.Resources>
+        <ControlTheme x:Key="SolidButtonTheme" TargetType="Button">
+            <Setter Property="Background" Value="#4867AC"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Padding" Value="16,9"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="RootBorder"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="#4867AC"
+                            BorderThickness="1"
+                            CornerRadius="10"
+                            Padding="{TemplateBinding Padding}">
+                        <ContentPresenter x:Name="PART_ContentPresenter"
+                                          Content="{TemplateBinding Content}"
+                                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                                          Foreground="{TemplateBinding Foreground}"
+                                          HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+        </ControlTheme>
+
+        <ControlTheme x:Key="PrimaryButtonTheme" TargetType="Button" BasedOn="{StaticResource SolidButtonTheme}">
+            <Setter Property="Padding" Value="28,10"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </ControlTheme>
+
+        <ControlTheme x:Key="DangerButtonTheme" TargetType="Button">
+            <Setter Property="Background" Value="#BB0C07"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Padding" Value="16,9"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="RootBorder"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="#BB0C07"
+                            BorderThickness="1"
+                            CornerRadius="10"
+                            Padding="{TemplateBinding Padding}">
+                        <ContentPresenter x:Name="PART_ContentPresenter"
+                                          Content="{TemplateBinding Content}"
+                                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                                          Foreground="{TemplateBinding Foreground}"
+                                          HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+        </ControlTheme>
+
+        <ControlTheme x:Key="AuthCheckBoxTheme" TargetType="CheckBox">
+            <Setter Property="Foreground" Value="#000000"/>
+            <Setter Property="Template">
+                <ControlTemplate TargetType="CheckBox">
+                    <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                        <Border x:Name="CheckBorder"
+                                Width="18"
+                                Height="18"
+                                Background="#FFFFFF"
+                                BorderBrush="#4867AC"
+                                BorderThickness="2"
+                                CornerRadius="4"
+                                VerticalAlignment="Center">
+                            <Path x:Name="CheckMark"
+                                  Data="M 2,5 L 6,9 L 14,1"
+                                  Stroke="#4867AC"
+                                  StrokeThickness="2"
+                                  Stretch="Uniform"
+                                  Margin="2"
+                                  IsVisible="False"/>
+                        </Border>
+                        <ContentPresenter x:Name="PART_ContentPresenter"
+                                          Content="{TemplateBinding Content}"
+                                          Foreground="{TemplateBinding Foreground}"
+                                          VerticalAlignment="Center"/>
+                    </StackPanel>
+                </ControlTemplate>
+            </Setter>
+        </ControlTheme>
+    </Application.Resources>
+
+    <Application.Styles>
+        <FluentTheme />
+        <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml"/>
+
+        <Style Selector="Window">
+            <Setter Property="FontFamily" Value="Century Gothic, Inter, Segoe UI, Arial"/>
+            <Setter Property="Background" Value="#F1F1F1"/>
+            <Setter Property="Foreground" Value="#000000"/>
+        </Style>
+
+        <Style Selector="TextBlock">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Foreground" Value="#000000"/>
+        </Style>
+
+        <Style Selector="Button">
+            <Setter Property="Theme" Value="{StaticResource SolidButtonTheme}"/>
+            <Setter Property="MinHeight" Value="34"/>
+            <Setter Property="MinWidth" Value="100"/>
+        </Style>
+        <Style Selector="Button:pointerover">
+            <Setter Property="Background" Value="#F3CC8D"/>
+            <Setter Property="Foreground" Value="#000000"/>
+        </Style>
+        <Style Selector="Button:pointerover /template/ Border#RootBorder">
+            <Setter Property="Background" Value="#F3CC8D"/>
+            <Setter Property="BorderBrush" Value="#F3CC8D"/>
+        </Style>
+        <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="#000000"/>
+        </Style>
+        <Style Selector="Button:pressed">
+            <Setter Property="Background" Value="#BB0C07"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+        </Style>
+        <Style Selector="Button:pressed /template/ Border#RootBorder">
+            <Setter Property="Background" Value="#BB0C07"/>
+            <Setter Property="BorderBrush" Value="#BB0C07"/>
+        </Style>
+        <Style Selector="Button:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+        </Style>
+
+        <Style Selector="Button.primary">
+            <Setter Property="Theme" Value="{StaticResource PrimaryButtonTheme}"/>
+            <Setter Property="MinHeight" Value="38"/>
+        </Style>
+
+        <Style Selector="Button.nav">
+            <Setter Property="MinHeight" Value="44"/>
+            <Setter Property="MinWidth" Value="0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Padding" Value="16,10"/>
+            <Setter Property="Background" Value="#F1F1F1"/>
+            <Setter Property="Foreground" Value="#000000"/>
+        </Style>
+        <Style Selector="Button.nav /template/ Border#RootBorder">
+            <Setter Property="Background" Value="#F1F1F1"/>
+            <Setter Property="BorderBrush" Value="#4867AC"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="12"/>
+        </Style>
+        <Style Selector="Button.nav:pointerover">
+            <Setter Property="Background" Value="#FEF9DE"/>
+            <Setter Property="Foreground" Value="#000000"/>
+        </Style>
+        <Style Selector="Button.nav:pointerover /template/ Border#RootBorder">
+            <Setter Property="Background" Value="#FEF9DE"/>
+            <Setter Property="BorderBrush" Value="#F3CC8D"/>
+        </Style>
+        <Style Selector="Button.nav:pressed">
+            <Setter Property="Background" Value="#F3CC8D"/>
+            <Setter Property="Foreground" Value="#000000"/>
+        </Style>
+        <Style Selector="Button.nav:pressed /template/ Border#RootBorder">
+            <Setter Property="Background" Value="#F3CC8D"/>
+            <Setter Property="BorderBrush" Value="#F3CC8D"/>
+        </Style>
+
+        <Style Selector="Button.danger">
+            <Setter Property="Theme" Value="{StaticResource DangerButtonTheme}"/>
+        </Style>
+        <Style Selector="Button.danger:pointerover">
+            <Setter Property="Background" Value="#F3CC8D"/>
+            <Setter Property="Foreground" Value="#000000"/>
+        </Style>
+        <Style Selector="Button.danger:pointerover /template/ Border#RootBorder">
+            <Setter Property="Background" Value="#F3CC8D"/>
+            <Setter Property="BorderBrush" Value="#F3CC8D"/>
+        </Style>
+        <Style Selector="Button.danger:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="#000000"/>
+        </Style>
+
+        <Style Selector="Button.qualityPlus">
+            <Setter Property="Background" Value="#FFFFFF"/>
+            <Setter Property="Foreground" Value="#4867AC"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="MinWidth" Value="52"/>
+            <Setter Property="MinHeight" Value="40"/>
+        </Style>
+        <Style Selector="Button.qualityPlus /template/ Border#RootBorder">
+            <Setter Property="BorderBrush" Value="#4867AC"/>
+            <Setter Property="BorderThickness" Value="2"/>
+        </Style>
+        <Style Selector="Button.qualityPlus.selected">
+            <Setter Property="Background" Value="#4867AC"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+        </Style>
+        <Style Selector="Button.qualityPlus.selected /template/ Border#RootBorder">
+            <Setter Property="Background" Value="#4867AC"/>
+            <Setter Property="BorderBrush" Value="#4867AC"/>
+        </Style>
+
+        <Style Selector="Button.qualityMinus">
+            <Setter Property="Background" Value="#FFFFFF"/>
+            <Setter Property="Foreground" Value="#BB0C07"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="MinWidth" Value="52"/>
+            <Setter Property="MinHeight" Value="40"/>
+        </Style>
+        <Style Selector="Button.qualityMinus /template/ Border#RootBorder">
+            <Setter Property="BorderBrush" Value="#BB0C07"/>
+            <Setter Property="BorderThickness" Value="2"/>
+        </Style>
+        <Style Selector="Button.qualityMinus.selected">
+            <Setter Property="Background" Value="#BB0C07"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+        </Style>
+        <Style Selector="Button.qualityMinus.selected /template/ Border#RootBorder">
+            <Setter Property="Background" Value="#BB0C07"/>
+            <Setter Property="BorderBrush" Value="#BB0C07"/>
+        </Style>
+
+        <Style Selector="CheckBox.auth">
+            <Setter Property="Theme" Value="{StaticResource AuthCheckBoxTheme}"/>
+        </Style>
+        <Style Selector="CheckBox.auth:checked /template/ Path#CheckMark">
+            <Setter Property="IsVisible" Value="True"/>
+        </Style>
+        <Style Selector="CheckBox.auth:checked /template/ Border#CheckBorder">
+            <Setter Property="Background" Value="#FEF9DE"/>
+        </Style>
+
+        <Style Selector="Button.link">
+            <Setter Property="Theme" Value="{x:Null}"/>
+            <Setter Property="MinHeight" Value="24"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#4867AC"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        <Style Selector="Button.link:pointerover">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#BB0C07"/>
+        </Style>
+        <Style Selector="Button.link:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="#BB0C07"/>
+        </Style>
+        <Style Selector="Button.link:pointerover /template/ Border#PART_Border">
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+
+        <Style Selector="TextBox, ComboBox, DatePicker">
+            <Setter Property="MinHeight" Value="34"/>
+            <Setter Property="Background" Value="#FFFFFF"/>
+            <Setter Property="Foreground" Value="#000000"/>
+            <Setter Property="BorderBrush" Value="#4867AC"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+        <Style Selector="DatePicker /template/ TextBox">
+            <Setter Property="Background" Value="#FFFFFF"/>
+            <Setter Property="Foreground" Value="#000000"/>
+            <Setter Property="BorderBrush" Value="#4867AC"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+
+        <Style Selector="DatePickerPresenter">
+            <Setter Property="Background" Value="#FFFFFF"/>
+            <Setter Property="Foreground" Value="#000000"/>
+        </Style>
+        <Style Selector="DatePickerPresenter TextBlock">
+            <Setter Property="Foreground" Value="#000000"/>
+        </Style>
+        <Style Selector="DatePickerPresenter Button">
+            <Setter Property="Theme" Value="{x:Null}"/>
+            <Setter Property="MinWidth" Value="0"/>
+            <Setter Property="MinHeight" Value="26"/>
+            <Setter Property="Padding" Value="6,0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Foreground" Value="#000000"/>
+        </Style>
+        <Style Selector="DatePickerPresenter Button:pointerover">
+            <Setter Property="Background" Value="#FEF9DE"/>
+            <Setter Property="Foreground" Value="#000000"/>
+        </Style>
+        <Style Selector="DatePickerPresenter Button:pressed">
+            <Setter Property="Background" Value="#F3CC8D"/>
+            <Setter Property="Foreground" Value="#000000"/>
+        </Style>
+        <Style Selector="DatePickerPresenter CalendarDayButton:selected">
+            <Setter Property="Background" Value="#4867AC"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+        </Style>
+        <Style Selector="DatePickerPresenter CalendarDayButton:pointerover">
+            <Setter Property="Background" Value="#F3CC8D"/>
+            <Setter Property="Foreground" Value="#000000"/>
+        </Style>
+        <Style Selector="Calendar">
+            <Setter Property="Background" Value="#4867AC"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+            <Setter Property="BorderBrush" Value="#F3CC8D"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+        <Style Selector="Calendar TextBlock">
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+        </Style>
+        <Style Selector="Calendar Button">
+            <Setter Property="Theme" Value="{x:Null}"/>
+            <Setter Property="MinWidth" Value="0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+        <Style Selector="Calendar Button:pointerover">
+            <Setter Property="Background" Value="#F3CC8D"/>
+            <Setter Property="Foreground" Value="#000000"/>
+        </Style>
+        <Style Selector="CalendarDayButton:selected">
+            <Setter Property="Background" Value="#BB0C07"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+        </Style>
+        <Style Selector="CalendarDayButton:pointerover">
+            <Setter Property="Background" Value="#F3CC8D"/>
+            <Setter Property="Foreground" Value="#000000"/>
+        </Style>
+
+        <Style Selector="ComboBoxItem">
+            <Setter Property="Background" Value="#FFFFFF"/>
+            <Setter Property="Foreground" Value="#000000"/>
+            <Setter Property="Padding" Value="10,8"/>
+        </Style>
+        <Style Selector="ComboBoxItem:pointerover">
+            <Setter Property="Background" Value="#F3CC8D"/>
+            <Setter Property="Foreground" Value="#000000"/>
+        </Style>
+        <Style Selector="ComboBoxItem:selected">
+            <Setter Property="Background" Value="#4867AC"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+        </Style>
+        <Style Selector="ComboBoxItem:selected:pointerover">
+            <Setter Property="Background" Value="#BB0C07"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+        </Style>
+
+        <Style Selector="ComboBox /template/ Popup ListBox">
+            <Setter Property="Background" Value="#FFFFFF"/>
+            <Setter Property="BorderBrush" Value="#4867AC"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+
+        <Style Selector="CheckBox">
+            <Setter Property="Foreground" Value="#000000"/>
+        </Style>
+
+        <Style Selector="DataGridRow">
+            <Setter Property="Background" Value="#FFFFFF"/>
+            <Setter Property="Foreground" Value="#000000"/>
+        </Style>
+        <Style Selector="DataGridRow:nth-child(even)">
+            <Setter Property="Background" Value="#FEF9DE"/>
+        </Style>
+        <Style Selector="DataGridRow:selected">
+            <Setter Property="Background" Value="#F3CC8D"/>
+            <Setter Property="Foreground" Value="#000000"/>
+        </Style>
+        <Style Selector="DataGridRow:selected TextBlock">
+            <Setter Property="Foreground" Value="#000000"/>
+        </Style>
+        <Style Selector="DataGridCell">
+            <Setter Property="Foreground" Value="#000000"/>
+        </Style>
+        <Style Selector="DataGridRow:selected DataGridCell">
+            <Setter Property="Background" Value="#F3CC8D"/>
+            <Setter Property="Foreground" Value="#000000"/>
+        </Style>
+
+        <Style Selector="DataGridColumnHeader">
+            <Setter Property="Background" Value="#4867AC"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+            <Setter Property="BorderBrush" Value="#F3CC8D"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="MinHeight" Value="36"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+        <Style Selector="DataGridColumnHeader:pointerover">
+            <Setter Property="Background" Value="#BB0C07"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+        </Style>
+        <Style Selector="DataGridColumnHeader:pressed">
+            <Setter Property="Background" Value="#BB0C07"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+        </Style>
+        <Style Selector="DataGridColumnHeader TextBlock">
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+        </Style>
+        <Style Selector="DataGridColumnHeader ContentPresenter">
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+        </Style>
+
+        <Style Selector="DataGrid">
+            <Setter Property="GridLinesVisibility" Value="All"/>
+            <Setter Property="Background" Value="#FFFFFF"/>
+            <Setter Property="RowBackground" Value="#FFFFFF"/>
+            <Setter Property="Foreground" Value="#000000"/>
+            <Setter Property="BorderBrush" Value="#4867AC"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+    </Application.Styles>
+</Application>
