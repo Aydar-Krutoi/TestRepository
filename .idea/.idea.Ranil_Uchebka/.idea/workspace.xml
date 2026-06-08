@@ -33,6 +33,7 @@
     "accountId": "27be3494-22d6-4be8-b349-0a635ed02ecf"
   }
 }]]></component>
+  <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 6
 }</component>
@@ -90,13 +91,14 @@
       <updated>1779971601144</updated>
       <workItem from="1779971602260" duration="12551000" />
       <workItem from="1780032842866" duration="2507000" />
-      <workItem from="1780682616914" duration="8416000" />
+      <workItem from="1780682616914" duration="9604000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="UnityCheckinConfiguration" checkUnsavedScenes="true" />
   <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
