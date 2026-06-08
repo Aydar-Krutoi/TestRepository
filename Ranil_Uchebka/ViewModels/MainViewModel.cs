@@ -13,7 +13,7 @@ public partial class MainViewModel : ViewModelBase
     private readonly DatabaseService _databaseService;
     private readonly RememberMeService _rememberMeService;
     private readonly PasswordPolicyService _passwordPolicyService;
-
+    
     [ObservableProperty]
     private string _logoPath = string.Empty;
 
